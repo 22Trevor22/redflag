@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RedFlag — Community Safety Network</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #E8372A;
+    --red-dim: #9B2218;
+    --red-glow: rgba(232,55,42,0.15);
+    --bg: #0A0A0A;
+    --bg2: #111111;
+    --bg3: #161616;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+    --text: #F0EDE8;
+    --muted: #6B6865;
+    --muted2: #3D3B39;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 24px;
+    height: 52px;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-logo-mark {
+    width: 22px;
+    height: 22px;
+    background: var(--red);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #fff;
+    font-weight: 700;
+  }
+  .nav-logo-text { color: var(--text); }
+  .nav-logo-text span { color: var(--red); }
+  .nav-tabs {
+    display: flex;
+    gap: 2px;
+    margin-left: auto;
+    align-items: center;
+  }
+  .nav-tab {
+    padding: 5px 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .nav-tab:hover { color: var(--text); background: var(--bg3); }
+  .nav-tab.active {
+    color: var(--text);
+    border-color: var(--border-hover);
+    background: var(--bg2);
+  }
+  .nav-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--red);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 99px;
+    padding: 0 4px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .nav-badge:empty { display: none; }
+
+  /* ── PAGES ── */
+  .page { display: none; position: relative; z-index: 1; }
+  .page.active { display: block; }
+
+  /* ── LANDING ── */
+  .hero {
+    padding: 80px 24px 64px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--red);
+  }
+  .hero-title {
+    font-size: clamp(44px, 7vw, 80px);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 28px;
+  }
+  .hero-title .red { color: var(--red); }
+  .hero-title .dim { color: var(--muted); }
+  .hero-sub {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+  .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    padding: 10px 22px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+    letter-spacing: 0.02em;
+  }
+  .btn-primary {
+    background: var(--red);
+    color: #fff;
+    border-color: var(--red);
+  }
+  .btn-primary:hover { background: #d42f23; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border-hover);
+  }
+  .btn-secondary:hover { background: var(--bg2); border-color: var(--border-hover); }
+
+  /* Stats strip */
+  .stats-strip {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin: 0 24px 56px;
+    max-width: calc(900px - 48px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .stat-cell {
+    padding: 24px 28px;
+    border-right: 1px solid var(--border);
+  }
+  .stat-cell:last-child { border-right: none; }
+  .stat-num {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 6px;
+    font-family: var(--mono);
+  }
+  .stat-num.red { color: var(--red); }
+  .stat-label { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+
+  /* How it works */
+  .section { padding: 0 24px 64px; max-width: 900px; margin: 0 auto; }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .step-card {
+    background: var(--bg2);
+    padding: 28px 24px;
+    transition: background 0.15s;
+  }
+  .step-card:hover { background: var(--bg3); }
+  .step-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--red);
+    margin-bottom: 14px;
+  }
+  .step-title { font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+  .step-desc { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+  /* Recent flags */
+  .flags-list { display: flex; flex-direction: column; gap: 1px; }
+  .flag-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: border-color 0.15s;
+  }
+  .flag-row:hover { border-color: var(--border-hover); }
+  .flag-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--red-glow);
+    border: 1px solid var(--red-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--red);
+    flex-shrink: 0;
+  }
+  .flag-name { font-weight: 600; font-size: 14px; }
+  .flag-id { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .flag-type {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 99px;
+    white-space: nowrap;
+  }
+  .flag-date { font-family: var(--mono); font-size: 11px; color: var(--muted2); }
+  .empty-state {
+    padding: 40px;
+    text-align: center;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 12px;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+  }
+
+  /* ── SUBMIT PAGE ── */
+  .form-page {
+    max-width: 580px;
+    margin: 0 auto;
+    padding: 48px 24px;
+  }
+  .page-header { margin-bottom: 36px; }
+  .page-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .page-sub { font-size: 14px; color: var(--muted); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 7px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  input, select, textarea {
+    background: var(--bg2);
+    border: 1px solid var(--border-hover);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--red);
+  }
+  select option { background: #1a1a1a; }
+  textarea { resize: vertical; min-height: 100px; }
+  .form-actions { margin-top: 24px; display: flex; align-items: center; gap: 14px; }
+  .error-msg {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--red);
+    margin-top: 10px;
+    display: none;
+  }
+  .success-banner {
+    background: rgba(29, 158, 117, 0.1);
+    border: 1px solid rgba(29, 158, 117, 0.3);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #5DCAA5;
+    margin-top: 16px;
+    display: none;
+  }
+
+  /* ── DASHBOARD ── */
+  .dashboard {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 24px;
+  }
+  .dash-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 36px;
+  }
+  .dash-metric {
+    background: var(--bg2);
+    padding: 20px 24px;
+  }
+  .dash-metric-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .dash-metric-num {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .dash-metric-num.red { color: var(--red); }
+
+  .dash-section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .dash-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .report-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 8px;
+    transition: border-color 0.15s;
+  }
+  .report-card:hover { border-color: var(--border-hover); }
+  .report-card-top { display: flex; align-items: flex-start; gap: 14px; }
+  .report-info { flex: 1; min-width: 0; }
+  .report-name {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .report-uid {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .report-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .report-evidence {
+    font-size: 13px;
+    color: var(--muted);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+  .report-actions { display: flex; gap: 8px; }
+  .btn-sm {
+    padding: 6px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid var(--border-hover);
+    background: transparent;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .btn-sm:hover { background: var(--bg3); }
+  .btn-approve {
+    background: rgba(29, 158, 117, 0.1);
+    border-color: rgba(29, 158, 117, 0.4);
+    color: #5DCAA5;
+  }
+  .btn-approve:hover { background: rgba(29, 158, 117, 0.2); }
+  .btn-reject {
+    background: rgba(232, 55, 42, 0.08);
+    border-color: rgba(232, 55, 42, 0.3);
+    color: #E8A09A;
+  }
+  .btn-reject:hover { background: rgba(232, 55, 42, 0.15); }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    border: 1px solid;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .badge-pending { color: #EF9F27; border-color: rgba(239,159,39,0.3); background: rgba(239,159,39,0.08); }
+  .badge-confirmed { color: #E8A09A; border-color: rgba(232,55,42,0.3); background: rgba(232,55,42,0.08); }
+  .badge-rejected { color: var(--muted); border-color: var(--border); background: var(--bg3); }
+
+  /* Search */
+  .search-row { display: flex; gap: 10px; margin-bottom: 14px; }
+  .search-row input { flex: 1; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--bg2);
+    border: 1px solid var(--border-hover);
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    z-index: 999;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    max-width: 300px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.green { border-color: rgba(29,158,117,0.4); color: #5DCAA5; }
+  .toast.red-t { border-color: rgba(232,55,42,0.4); color: #E8A09A; }
+
+  /* ── LOADING ── */
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid var(--border-hover);
+    border-top-color: var(--red);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted2);
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--text); }
+
+  @media (max-width: 600px) {
+    .steps-grid { grid-template-columns: 1fr; }
+    .stats-strip { grid-template-columns: 1fr; }
+    .stat-cell { border-right: none; border-bottom: 1px solid var(--border); }
+    .stat-cell:last-child { border-bottom: none; }
+    .dash-metrics { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .hero-title { font-size: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-mark">RF</div>
+    <div class="nav-logo-text"><span>Red</span>Flag</div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('home')">Overview</button>
+    <button class="nav-tab" onclick="showPage('submit')">Submit report</button>
+    <button class="nav-tab" onclick="showPage('dashboard')">
+      Staff dashboard
+      <span class="nav-badge" id="pending-badge"></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ══ HOME PAGE ══ -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-eyebrow">Community safety network</div>
+    <h1 class="hero-title">
+      <span class="red">Red</span>Flag<br>
+      <span class="dim">Intelligence</span><br>
+      Hub
+    </h1>
+    <p class="hero-sub">A cross-server reporting system that identifies and broadcasts confirmed bad actors to every affiliated Discord community.</p>
+    <div class="hero-actions">
+      <button class="btn btn-primary" onclick="showPage('submit')">Submit a report</button>
+      <button class="btn btn-secondary" onclick="showPage('dashboard')">Staff dashboard</button>
+    </div>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat-cell">
+      <div class="stat-num red" id="stat-confirmed">—</div>
+      <div class="stat-label">confirmed flags</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num" id="stat-pending">—</div>
+      <div class="stat-label">pending review</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">3</div>
+      <div class="stat-label">servers protected</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">How it works</div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01 — Submit</div>
+        <div class="step-title">Report a bad actor</div>
+        <div class="step-desc">Users submit reports with a Discord username, user ID, violation category, and evidence via our secure form.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02 — Verify</div>
+        <div class="step-title">Staff review</div>
+        <div class="step-desc">Our staff team cross-references logs and confirms the authenticity of all evidence before issuing a flag.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03 — Alert</div>
+        <div class="step-title">Network broadcast</div>
+        <div class="step-desc">Once confirmed, an automated alert is pushed to every server in the RedFlag network immediately.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Recent confirmed flags</div>
+    <div id="recent-flags-list">
+      <div class="empty-state">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SUBMIT PAGE ══ -->
+<div id="page-submit" class="page">
+  <div class="form-page">
+    <div class="page-header">
+      <h2 class="page-title">Submit a report</h2>
+      <p class="page-sub">All submissions are reviewed by our staff before a flag is issued. False reports may result in a ban.</p>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Discord username</label>
+        <input id="f-username" type="text" placeholder="baduser#1234" />
+      </div>
+      <div class="form-group">
+        <label>Discord user ID</label>
+        <input id="f-userid" type="text" placeholder="123456789012345678" />
+      </div>
+      <div class="form-group full">
+        <label>Violation type</label>
+        <select id="f-type">
+          <option value="">Select a category...</option>
+          <option>Scamming / fraud</option>
+          <option>Harassment / threats</option>
+          <option>NSFW / inappropriate content</option>
+          <option>Doxxing</option>
+          <option>Raiding</option>
+          <option>Impersonation</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Evidence / description</label>
+        <textarea id="f-evidence" placeholder="Describe the incident in detail. Include links to screenshots, message logs, or any other relevant evidence..."></textarea>
+      </div>
+      <div class="form-group full">
+        <label>Your Discord username (reporter)</label>
+        <input id="f-reporter" type="text" placeholder="yourname#5678" />
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" onclick="submitReport()" id="submit-btn">Submit report</button>
+    </div>
+    <div class="error-msg" id="submit-error"></div>
+    <div class="success-banner" id="submit-success">
+      Report submitted successfully. Our staff will review it shortly.
+    </div>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD PAGE ══ -->
+<div id="page-dashboard" class="page">
+  <div class="dashboard">
+    <div class="page-header">
+      <h2 class="page-title">Staff dashboard</h2>
+      <p class="page-sub">Review pending reports and manage confirmed flags.</p>
+    </div>
+
+    <div class="dash-metrics">
+      <div class="dash-metric">
+        <div class="dash-metric-label">confirmed flags</div>
+        <div class="dash-metric-num red" id="d-confirmed">—</div>
+      </div>
+      <div class="dash-metric">
+        <div class="dash-metric-label">pending review</div>
+        <div class="dash-metric-num" id="d-pending">—</div>
+      </div>
+      <div class="dash-metric">
+        <div class="dash-metric-label">rejected</div>
+        <div class="dash-metric-num" id="d-rejected">—</div>
+      </div>
+    </div>
+
+    <div class="dash-section-label">Pending review</div>
+    <div id="pending-list"><div class="empty-state">Loading...</div></div>
+
+    <div style="height:32px"></div>
+    <div class="dash-section-label">Confirmed flags</div>
+    <div class="search-row">
+      <input type="text" id="search-input" placeholder="Search by username or user ID..." oninput="renderConfirmed()" />
+    </div>
+    <div id="confirmed-list"><div class="empty-state">Loading...</div></div>
+  </div>
+</div>
+
+<footer>
+  <span>RedFlag — an official service of Bot Express</span>
+  &nbsp;·&nbsp;
+  <a href="https://discord.gg/redflag">discord.gg/redflag</a>
+  &nbsp;·&nbsp;
+  <a href="https://botexpress.net">botexpress.net</a>
+  &nbsp;·&nbsp;
+  <span>© 2026 All Rights Reserved</span>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  CONFIGURATION — replace these two values
+// ══════════════════════════════════════════
+const SUPABASE_URL = 'https://aezfhdzccdmhdjebahkx.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlemZoZHpjY2RtaGRqZWJhaGt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMDA4NDIsImV4cCI6MjA5MDU3Njg0Mn0.-5ffmUAHtd0lWinIjqK3gFkwEi0fZSMgIuZSo3Ctud8';
+// ══════════════════════════════════════════
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let allReports = [];
+
+// ── NAVIGATION ──────────────────────────────
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  const map = { home: 0, submit: 1, dashboard: 2 };
+  document.querySelectorAll('.nav-tab')[map[p]].classList.add('active');
+  if (p === 'dashboard') loadReports();
+  if (p === 'home') loadHome();
+}
+
+// ── TOAST ────────────────────────────────────
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── INITIALS ─────────────────────────────────
+function initials(name) {
+  return (name || '??').slice(0, 2).toUpperCase();
+}
+
+// ── FORMAT DATE ──────────────────────────────
+function fmtDate(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// ── LOAD HOME ────────────────────────────────
+async function loadHome() {
+  const { data, error } = await db
+    .from('reports')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    document.getElementById('recent-flags-list').innerHTML =
+      '<div class="empty-state">Could not load flags. Check your Supabase configuration.</div>';
+    console.error(error);
+    return;
+  }
+
+  allReports = data || [];
+  updateStats();
+
+  const confirmed = allReports.filter(r => r.status === 'confirmed').slice(0, 5);
+  const el = document.getElementById('recent-flags-list');
+
+  if (!confirmed.length) {
+    el.innerHTML = '<div class="empty-state">No confirmed flags yet.</div>';
+    return;
+  }
+
+  el.innerHTML = confirmed.map(r => `
+    <div class="flag-row">
+      <div class="flag-avatar">${initials(r.username)}</div>
+      <div>
+        <div class="flag-name">${esc(r.username)}</div>
+        <div class="flag-id">${esc(r.userid)}</div>
+      </div>
+      <span class="flag-date">${fmtDate(r.created_at)}</span>
+      <span class="flag-type">${esc(r.type)}</span>
+    </div>
+  `).join('');
+}
+
+// ── UPDATE STATS ─────────────────────────────
+function updateStats() {
+  const confirmed = allReports.filter(r => r.status === 'confirmed').length;
+  const pending = allReports.filter(r => r.status === 'pending').length;
+  const rejected = allReports.filter(r => r.status === 'rejected').length;
+
+  document.getElementById('stat-confirmed').textContent = confirmed;
+  document.getElementById('stat-pending').textContent = pending;
+  document.getElementById('d-confirmed').textContent = confirmed;
+  document.getElementById('d-pending').textContent = pending;
+  document.getElementById('d-rejected').textContent = rejected;
+
+  const badge = document.getElementById('pending-badge');
+  badge.textContent = pending > 0 ? pending : '';
+}
+
+// ── LOAD DASHBOARD ───────────────────────────
+async function loadReports() {
+  const { data, error } = await db
+    .from('reports')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    document.getElementById('pending-list').innerHTML =
+      '<div class="empty-state">Could not load reports. Check your Supabase configuration.</div>';
+    console.error(error);
+    return;
+  }
+
+  allReports = data || [];
+  updateStats();
+  renderPending();
+  renderConfirmed();
+}
+
+function renderPending() {
+  const pending = allReports.filter(r => r.status === 'pending');
+  const el = document.getElementById('pending-list');
+  if (!pending.length) {
+    el.innerHTML = '<div class="empty-state">No pending reports. You\'re all caught up.</div>';
+    return;
+  }
+  el.innerHTML = pending.map(r => `
+    <div class="report-card" id="card-${r.id}">
+      <div class="report-card-top">
+        <div class="flag-avatar">${initials(r.username)}</div>
+        <div class="report-info">
+          <div class="report-name">
+            ${esc(r.username)}
+            <span class="report-uid">${esc(r.userid)}</span>
+            <span class="badge badge-pending">pending</span>
+          </div>
+          <div class="report-meta">
+            Submitted ${fmtDate(r.created_at)} by ${esc(r.reporter)} &nbsp;·&nbsp; ${esc(r.type)}
+          </div>
+          <div class="report-evidence">${esc(r.evidence)}</div>
+          <div class="report-actions">
+            <button class="btn-sm btn-approve" onclick="decide('${r.id}', 'confirmed')">Approve &amp; flag</button>
+            <button class="btn-sm btn-reject" onclick="decide('${r.id}', 'rejected')">Reject</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderConfirmed() {
+  const query = (document.getElementById('search-input').value || '').toLowerCase();
+  const confirmed = allReports.filter(r =>
+    r.status === 'confirmed' &&
+    (!query || r.username.toLowerCase().includes(query) || r.userid.includes(query))
+  );
+  const el = document.getElementById('confirmed-list');
+  if (!confirmed.length) {
+    el.innerHTML = '<div class="empty-state">No confirmed flags' + (query ? ' matching your search' : '') + '.</div>';
+    return;
+  }
+  el.innerHTML = confirmed.map(r => `
+    <div class="report-card">
+      <div class="report-card-top">
+        <div class="flag-avatar" style="background:rgba(232,55,42,0.12);border-color:rgba(232,55,42,0.3);color:var(--red)">${initials(r.username)}</div>
+        <div class="report-info">
+          <div class="report-name">
+            ${esc(r.username)}
+            <span class="report-uid">${esc(r.userid)}</span>
+            <span class="badge badge-confirmed">confirmed</span>
+          </div>
+          <div class="report-meta">
+            Flagged ${fmtDate(r.created_at)} &nbsp;·&nbsp; ${esc(r.type)}
+          </div>
+          <div class="report-evidence">${esc(r.evidence)}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── APPROVE / REJECT ─────────────────────────
+async function decide(id, status) {
+  const { error } = await db
+    .from('reports')
+    .update({ status })
+    .eq('id', id);
+
+  if (error) {
+    showToast('Error updating report.', 'red-t');
+    console.error(error);
+    return;
+  }
+
+  const idx = allReports.findIndex(r => r.id === id);
+  if (idx > -1) allReports[idx].status = status;
+  updateStats();
+  renderPending();
+  renderConfirmed();
+
+  if (status === 'confirmed') {
+    showToast('Flag confirmed — network alert sent.', 'green');
+  } else {
+    showToast('Report rejected.', '');
+  }
+}
+
+// ── SUBMIT REPORT ────────────────────────────
+async function submitReport() {
+  const username = document.getElementById('f-username').value.trim();
+  const userid   = document.getElementById('f-userid').value.trim();
+  const type     = document.getElementById('f-type').value;
+  const evidence = document.getElementById('f-evidence').value.trim();
+  const reporter = document.getElementById('f-reporter').value.trim();
+  const errEl    = document.getElementById('submit-error');
+  const successEl = document.getElementById('submit-success');
+  const btn      = document.getElementById('submit-btn');
+
+  errEl.style.display = 'none';
+  successEl.style.display = 'none';
+
+  if (!username || !userid || !type || !evidence || !reporter) {
+    errEl.textContent = 'Please fill in all fields before submitting.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Submitting...';
+
+  const { error } = await db.from('reports').insert({
+    username, userid, type, evidence, reporter, status: 'pending'
+  });
+
+  btn.disabled = false;
+  btn.innerHTML = 'Submit report';
+
+  if (error) {
+    errEl.textContent = 'Submission failed: ' + error.message;
+    errEl.style.display = 'block';
+    console.error(error);
+    return;
+  }
+
+  ['f-username', 'f-userid', 'f-evidence', 'f-reporter'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-type').value = '';
+  successEl.style.display = 'block';
+  showToast('Report submitted — pending staff review.', 'green');
+}
+
+// ── ESCAPE HTML ──────────────────────────────
+function esc(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ── INIT ─────────────────────────────────────
+loadHome();
+</script>
+</body>
+</html>
