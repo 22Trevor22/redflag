@@ -24,7 +24,6 @@
     --sans: 'Syne', sans-serif;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
   body {
     background: var(--bg);
     color: var(--text);
@@ -34,8 +33,6 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-
-  /* ── NOISE OVERLAY ── */
   body::before {
     content: '';
     position: fixed;
@@ -48,513 +45,167 @@
 
   /* ── NAV ── */
   nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 24px;
-    height: 52px;
-    background: rgba(10,10,10,0.85);
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 24px; height: 52px;
+    background: rgba(10,10,10,0.9);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
   }
-  .nav-logo {
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .nav-logo-mark {
-    width: 22px;
-    height: 22px;
-    background: var(--red);
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    color: #fff;
-    font-weight: 700;
-  }
-  .nav-logo-text { color: var(--text); }
+  .nav-logo { font-size: 15px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+  .nav-logo-mark { width: 22px; height: 22px; background: var(--red); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; font-weight: 700; }
   .nav-logo-text span { color: var(--red); }
-  .nav-tabs {
-    display: flex;
-    gap: 2px;
-    margin-left: auto;
-    align-items: center;
-  }
-  .nav-tab {
-    padding: 5px 14px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--muted);
-    cursor: pointer;
-    background: none;
-    border: 1px solid transparent;
-    border-radius: 6px;
-    transition: all 0.15s;
-    position: relative;
-  }
+  .nav-tabs { display: flex; gap: 2px; margin-left: auto; align-items: center; }
+  .nav-tab { padding: 5px 14px; font-family: var(--mono); font-size: 12px; color: var(--muted); cursor: pointer; background: none; border: 1px solid transparent; border-radius: 6px; transition: all 0.15s; }
   .nav-tab:hover { color: var(--text); background: var(--bg3); }
-  .nav-tab.active {
-    color: var(--text);
-    border-color: var(--border-hover);
-    background: var(--bg2);
-  }
-  .nav-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--red);
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    min-width: 16px;
-    height: 16px;
-    border-radius: 99px;
-    padding: 0 4px;
-    margin-left: 6px;
-    vertical-align: middle;
-  }
+  .nav-tab.active { color: var(--text); border-color: var(--border-hover); background: var(--bg2); }
+  .nav-tab.hidden { display: none; }
+  .nav-badge { display: inline-flex; align-items: center; justify-content: center; background: var(--red); color: #fff; font-size: 10px; font-weight: 700; min-width: 16px; height: 16px; border-radius: 99px; padding: 0 4px; margin-left: 6px; }
   .nav-badge:empty { display: none; }
+  .nav-user { display: flex; align-items: center; gap: 8px; margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--border); }
+  .nav-avatar { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border-hover); }
+  .nav-username { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .nav-logout { font-family: var(--mono); font-size: 11px; color: var(--muted); cursor: pointer; background: none; border: none; padding: 3px 8px; border-radius: 4px; transition: all 0.15s; }
+  .nav-logout:hover { color: var(--red); background: var(--red-glow); }
 
   /* ── PAGES ── */
   .page { display: none; position: relative; z-index: 1; }
   .page.active { display: block; }
 
-  /* ── LANDING ── */
-  .hero {
-    padding: 80px 24px 64px;
-    max-width: 900px;
-    margin: 0 auto;
+  /* ── LOGIN WALL ── */
+  .login-wall {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: calc(100vh - 52px);
+    padding: 40px 24px; text-align: center;
   }
-  .hero-eyebrow {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--red);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  .login-icon { width: 56px; height: 56px; background: var(--red-glow); border: 1px solid var(--red-dim); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 24px; }
+  .login-title { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+  .login-sub { font-size: 14px; color: var(--muted); max-width: 340px; margin-bottom: 28px; line-height: 1.7; }
+  .btn-discord {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #5865F2; color: #fff;
+    padding: 11px 24px; border-radius: 8px; border: none;
+    font-family: var(--sans); font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: background 0.15s;
   }
-  .hero-eyebrow::before {
-    content: '';
-    width: 24px;
-    height: 1px;
-    background: var(--red);
+  .btn-discord:hover { background: #4752c4; }
+  .btn-discord svg { width: 20px; height: 20px; }
+  .access-denied {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: calc(100vh - 52px); padding: 40px; text-align: center;
   }
-  .hero-title {
-    font-size: clamp(44px, 7vw, 80px);
-    font-weight: 700;
-    line-height: 0.95;
-    letter-spacing: -0.03em;
-    margin-bottom: 28px;
-  }
+  .access-denied-title { font-size: 20px; font-weight: 700; color: var(--red); margin-bottom: 10px; }
+  .access-denied-sub { font-size: 14px; color: var(--muted); max-width: 340px; line-height: 1.7; }
+
+  /* ── HERO ── */
+  .hero { padding: 80px 24px 64px; max-width: 900px; margin: 0 auto; }
+  .hero-eyebrow { font-family: var(--mono); font-size: 11px; color: var(--red); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--red); }
+  .hero-title { font-size: clamp(44px, 7vw, 80px); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 28px; }
   .hero-title .red { color: var(--red); }
   .hero-title .dim { color: var(--muted); }
-  .hero-sub {
-    font-size: 16px;
-    color: var(--muted);
-    max-width: 480px;
-    line-height: 1.7;
-    margin-bottom: 36px;
-  }
+  .hero-sub { font-size: 16px; color: var(--muted); max-width: 480px; line-height: 1.7; margin-bottom: 36px; }
   .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-  .btn {
-    padding: 10px 22px;
-    font-family: var(--mono);
-    font-size: 12px;
-    font-weight: 500;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s;
-    border: 1px solid transparent;
-    letter-spacing: 0.02em;
-  }
-  .btn-primary {
-    background: var(--red);
-    color: #fff;
-    border-color: var(--red);
-  }
+  .btn { padding: 10px 22px; font-family: var(--mono); font-size: 12px; font-weight: 500; border-radius: 8px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
+  .btn-primary { background: var(--red); color: #fff; border-color: var(--red); }
   .btn-primary:hover { background: #d42f23; }
-  .btn-secondary {
-    background: transparent;
-    color: var(--text);
-    border-color: var(--border-hover);
-  }
-  .btn-secondary:hover { background: var(--bg2); border-color: var(--border-hover); }
+  .btn-secondary { background: transparent; color: var(--text); border-color: var(--border-hover); }
+  .btn-secondary:hover { background: var(--bg2); }
 
-  /* Stats strip */
-  .stats-strip {
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    margin: 0 24px 56px;
-    max-width: calc(900px - 48px);
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .stat-cell {
-    padding: 24px 28px;
-    border-right: 1px solid var(--border);
-  }
+  /* ── STATS ── */
+  .stats-strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); display: grid; grid-template-columns: repeat(3, 1fr); max-width: 900px; margin: 0 auto 56px; }
+  .stat-cell { padding: 24px 28px; border-right: 1px solid var(--border); }
   .stat-cell:last-child { border-right: none; }
-  .stat-num {
-    font-size: 36px;
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 6px;
-    font-family: var(--mono);
-  }
+  .stat-num { font-size: 36px; font-weight: 700; line-height: 1; margin-bottom: 6px; font-family: var(--mono); }
   .stat-num.red { color: var(--red); }
   .stat-label { font-size: 12px; color: var(--muted); font-family: var(--mono); }
 
-  /* How it works */
+  /* ── SECTIONS ── */
   .section { padding: 0 24px 64px; max-width: 900px; margin: 0 auto; }
-  .section-label {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .section-label { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
   .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-  .steps-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  .step-card {
-    background: var(--bg2);
-    padding: 28px 24px;
-    transition: background 0.15s;
-  }
+  .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .step-card { background: var(--bg2); padding: 28px 24px; }
   .step-card:hover { background: var(--bg3); }
-  .step-num {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--red);
-    margin-bottom: 14px;
-  }
+  .step-num { font-family: var(--mono); font-size: 11px; color: var(--red); margin-bottom: 14px; }
   .step-title { font-weight: 600; font-size: 15px; margin-bottom: 8px; }
   .step-desc { font-size: 13px; color: var(--muted); line-height: 1.65; }
 
-  /* Recent flags */
-  .flags-list { display: flex; flex-direction: column; gap: 1px; }
-  .flag-row {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 16px;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    transition: border-color 0.15s;
-  }
+  /* ── FLAG ROWS ── */
+  .flag-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 6px; transition: border-color 0.15s; }
   .flag-row:hover { border-color: var(--border-hover); }
-  .flag-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--red-glow);
-    border: 1px solid var(--red-dim);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--red);
-    flex-shrink: 0;
-  }
+  .flag-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--red-glow); border: 1px solid var(--red-dim); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; color: var(--red); flex-shrink: 0; }
   .flag-name { font-weight: 600; font-size: 14px; }
   .flag-id { font-family: var(--mono); font-size: 11px; color: var(--muted); }
-  .flag-type {
-    margin-left: auto;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    padding: 3px 10px;
-    border-radius: 99px;
-    white-space: nowrap;
-  }
+  .flag-type { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--muted); background: var(--bg3); border: 1px solid var(--border); padding: 3px 10px; border-radius: 99px; white-space: nowrap; }
   .flag-date { font-family: var(--mono); font-size: 11px; color: var(--muted2); }
-  .empty-state {
-    padding: 40px;
-    text-align: center;
-    color: var(--muted);
-    font-family: var(--mono);
-    font-size: 12px;
-    border: 1px dashed var(--border);
-    border-radius: 8px;
-  }
+  .empty-state { padding: 40px; text-align: center; color: var(--muted); font-family: var(--mono); font-size: 12px; border: 1px dashed var(--border); border-radius: 8px; }
 
-  /* ── SUBMIT PAGE ── */
-  .form-page {
-    max-width: 580px;
-    margin: 0 auto;
-    padding: 48px 24px;
-  }
+  /* ── SUBMIT FORM ── */
+  .form-page { max-width: 580px; margin: 0 auto; padding: 48px 24px; }
   .page-header { margin-bottom: 36px; }
   .page-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
   .page-sub { font-size: 14px; color: var(--muted); }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .form-group { display: flex; flex-direction: column; gap: 7px; }
   .form-group.full { grid-column: 1 / -1; }
-  label {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-  input, select, textarea {
-    background: var(--bg2);
-    border: 1px solid var(--border-hover);
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-family: var(--sans);
-    font-size: 14px;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.15s;
-    width: 100%;
-  }
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--red);
-  }
+  label { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+  input, select, textarea { background: var(--bg2); border: 1px solid var(--border-hover); border-radius: 8px; padding: 10px 14px; font-family: var(--sans); font-size: 14px; color: var(--text); outline: none; transition: border-color 0.15s; width: 100%; }
+  input:focus, select:focus, textarea:focus { border-color: var(--red); }
   select option { background: #1a1a1a; }
   textarea { resize: vertical; min-height: 100px; }
   .form-actions { margin-top: 24px; display: flex; align-items: center; gap: 14px; }
-  .error-msg {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--red);
-    margin-top: 10px;
-    display: none;
-  }
-  .success-banner {
-    background: rgba(29, 158, 117, 0.1);
-    border: 1px solid rgba(29, 158, 117, 0.3);
-    border-radius: 8px;
-    padding: 14px 18px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: #5DCAA5;
-    margin-top: 16px;
-    display: none;
-  }
+  .error-msg { font-family: var(--mono); font-size: 12px; color: var(--red); margin-top: 10px; display: none; }
+  .success-banner { background: rgba(29,158,117,0.1); border: 1px solid rgba(29,158,117,0.3); border-radius: 8px; padding: 14px 18px; font-family: var(--mono); font-size: 12px; color: #5DCAA5; margin-top: 16px; display: none; }
+  .reporter-prefill { font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 8px 12px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; }
 
   /* ── DASHBOARD ── */
-  .dashboard {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 48px 24px;
-  }
-  .dash-metrics {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 36px;
-  }
-  .dash-metric {
-    background: var(--bg2);
-    padding: 20px 24px;
-  }
-  .dash-metric-label {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
-  .dash-metric-num {
-    font-family: var(--mono);
-    font-size: 28px;
-    font-weight: 500;
-    line-height: 1;
-  }
+  .dashboard { max-width: 860px; margin: 0 auto; padding: 48px 24px; }
+  .dash-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 36px; }
+  .dash-metric { background: var(--bg2); padding: 20px 24px; }
+  .dash-metric-label { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+  .dash-metric-num { font-family: var(--mono); font-size: 28px; font-weight: 500; line-height: 1; }
   .dash-metric-num.red { color: var(--red); }
-
-  .dash-section-label {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  .dash-section-label { font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
   .dash-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  .report-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px 20px;
-    margin-bottom: 8px;
-    transition: border-color 0.15s;
-  }
+  .report-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 8px; transition: border-color 0.15s; }
   .report-card:hover { border-color: var(--border-hover); }
   .report-card-top { display: flex; align-items: flex-start; gap: 14px; }
   .report-info { flex: 1; min-width: 0; }
-  .report-name {
-    font-weight: 600;
-    font-size: 14px;
-    margin-bottom: 3px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .report-uid {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    font-weight: 400;
-  }
-  .report-meta {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    margin-bottom: 10px;
-  }
-  .report-evidence {
-    font-size: 13px;
-    color: var(--muted);
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 10px 12px;
-    line-height: 1.6;
-    margin-bottom: 12px;
-  }
+  .report-name { font-weight: 600; font-size: 14px; margin-bottom: 3px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .report-uid { font-family: var(--mono); font-size: 11px; color: var(--muted); font-weight: 400; }
+  .report-meta { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+  .report-evidence { font-size: 13px; color: var(--muted); background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; line-height: 1.6; margin-bottom: 12px; }
   .report-actions { display: flex; gap: 8px; }
-  .btn-sm {
-    padding: 6px 14px;
-    font-family: var(--mono);
-    font-size: 11px;
-    border-radius: 6px;
-    cursor: pointer;
-    border: 1px solid var(--border-hover);
-    background: transparent;
-    color: var(--text);
-    transition: all 0.15s;
-  }
+  .btn-sm { padding: 6px 14px; font-family: var(--mono); font-size: 11px; border-radius: 6px; cursor: pointer; border: 1px solid var(--border-hover); background: transparent; color: var(--text); transition: all 0.15s; }
   .btn-sm:hover { background: var(--bg3); }
-  .btn-approve {
-    background: rgba(29, 158, 117, 0.1);
-    border-color: rgba(29, 158, 117, 0.4);
-    color: #5DCAA5;
-  }
-  .btn-approve:hover { background: rgba(29, 158, 117, 0.2); }
-  .btn-reject {
-    background: rgba(232, 55, 42, 0.08);
-    border-color: rgba(232, 55, 42, 0.3);
-    color: #E8A09A;
-  }
-  .btn-reject:hover { background: rgba(232, 55, 42, 0.15); }
-
-  /* Badges */
-  .badge {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 99px;
-    border: 1px solid;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
+  .btn-approve { background: rgba(29,158,117,0.1); border-color: rgba(29,158,117,0.4); color: #5DCAA5; }
+  .btn-approve:hover { background: rgba(29,158,117,0.2); }
+  .btn-reject { background: rgba(232,55,42,0.08); border-color: rgba(232,55,42,0.3); color: #E8A09A; }
+  .btn-reject:hover { background: rgba(232,55,42,0.15); }
+  .badge { display: inline-block; font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 99px; border: 1px solid; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
   .badge-pending { color: #EF9F27; border-color: rgba(239,159,39,0.3); background: rgba(239,159,39,0.08); }
   .badge-confirmed { color: #E8A09A; border-color: rgba(232,55,42,0.3); background: rgba(232,55,42,0.08); }
   .badge-rejected { color: var(--muted); border-color: var(--border); background: var(--bg3); }
-
-  /* Search */
   .search-row { display: flex; gap: 10px; margin-bottom: 14px; }
   .search-row input { flex: 1; }
 
   /* ── TOAST ── */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--bg2);
-    border: 1px solid var(--border-hover);
-    border-radius: 10px;
-    padding: 12px 18px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--text);
-    z-index: 999;
-    transform: translateY(80px);
-    opacity: 0;
-    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    pointer-events: none;
-    max-width: 300px;
-  }
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg2); border: 1px solid var(--border-hover); border-radius: 10px; padding: 12px 18px; font-family: var(--mono); font-size: 12px; color: var(--text); z-index: 999; transform: translateY(80px); opacity: 0; transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1); pointer-events: none; max-width: 300px; }
   .toast.show { transform: translateY(0); opacity: 1; }
   .toast.green { border-color: rgba(29,158,117,0.4); color: #5DCAA5; }
   .toast.red-t { border-color: rgba(232,55,42,0.4); color: #E8A09A; }
 
-  /* ── LOADING ── */
-  .spinner {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    border: 1.5px solid var(--border-hover);
-    border-top-color: var(--red);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    vertical-align: middle;
-    margin-right: 6px;
-  }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 1.5px solid var(--border-hover); border-top-color: var(--red); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 24px;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted2);
-    text-align: center;
-    position: relative;
-    z-index: 1;
-  }
+  footer { border-top: 1px solid var(--border); padding: 24px; font-family: var(--mono); font-size: 11px; color: var(--muted2); text-align: center; position: relative; z-index: 1; }
   footer a { color: var(--muted); text-decoration: none; }
   footer a:hover { color: var(--text); }
 
   @media (max-width: 600px) {
-    .steps-grid { grid-template-columns: 1fr; }
-    .stats-strip { grid-template-columns: 1fr; }
+    .steps-grid, .stats-strip, .dash-metrics { grid-template-columns: 1fr; }
     .stat-cell { border-right: none; border-bottom: 1px solid var(--border); }
-    .stat-cell:last-child { border-bottom: none; }
-    .dash-metrics { grid-template-columns: 1fr; }
     .form-grid { grid-template-columns: 1fr; }
     .hero-title { font-size: 40px; }
   }
@@ -570,91 +221,70 @@
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showPage('home')">Overview</button>
     <button class="nav-tab" onclick="showPage('submit')">Submit report</button>
-    <button class="nav-tab" onclick="showPage('dashboard')">
+    <button class="nav-tab hidden" id="tab-dashboard" onclick="showPage('dashboard')">
       Staff dashboard
       <span class="nav-badge" id="pending-badge"></span>
     </button>
   </div>
+  <div class="nav-user" id="nav-user" style="display:none">
+    <img class="nav-avatar" id="nav-avatar" src="" alt="">
+    <span class="nav-username" id="nav-username"></span>
+    <button class="nav-logout" onclick="logout()">sign out</button>
+  </div>
 </nav>
 
-<!-- ══ HOME PAGE ══ -->
+<!-- ══ HOME ══ -->
 <div id="page-home" class="page active">
   <div class="hero">
     <div class="hero-eyebrow">Community safety network</div>
-    <h1 class="hero-title">
-      <span class="red">Red</span>Flag<br>
-      <span class="dim">Intelligence</span><br>
-      Hub
-    </h1>
+    <h1 class="hero-title"><span class="red">Red</span>Flag<br><span class="dim">Intelligence</span><br>Hub</h1>
     <p class="hero-sub">A cross-server reporting system that identifies and broadcasts confirmed bad actors to every affiliated Discord community.</p>
     <div class="hero-actions">
       <button class="btn btn-primary" onclick="showPage('submit')">Submit a report</button>
-      <button class="btn btn-secondary" onclick="showPage('dashboard')">Staff dashboard</button>
+      <button class="btn btn-secondary" id="hero-dashboard-btn" style="display:none" onclick="showPage('dashboard')">Staff dashboard</button>
     </div>
   </div>
-
   <div class="stats-strip">
-    <div class="stat-cell">
-      <div class="stat-num red" id="stat-confirmed">—</div>
-      <div class="stat-label">confirmed flags</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-num" id="stat-pending">—</div>
-      <div class="stat-label">pending review</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-num">3</div>
-      <div class="stat-label">servers protected</div>
-    </div>
+    <div class="stat-cell"><div class="stat-num red" id="stat-confirmed">—</div><div class="stat-label">confirmed flags</div></div>
+    <div class="stat-cell"><div class="stat-num" id="stat-pending">—</div><div class="stat-label">pending review</div></div>
+    <div class="stat-cell"><div class="stat-num">47</div><div class="stat-label">servers protected</div></div>
   </div>
-
   <div class="section">
     <div class="section-label">How it works</div>
     <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-num">01 — Submit</div>
-        <div class="step-title">Report a bad actor</div>
-        <div class="step-desc">Users submit reports with a Discord username, user ID, violation category, and evidence via our secure form.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-num">02 — Verify</div>
-        <div class="step-title">Staff review</div>
-        <div class="step-desc">Our staff team cross-references logs and confirms the authenticity of all evidence before issuing a flag.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-num">03 — Alert</div>
-        <div class="step-title">Network broadcast</div>
-        <div class="step-desc">Once confirmed, an automated alert is pushed to every server in the RedFlag network immediately.</div>
-      </div>
+      <div class="step-card"><div class="step-num">01 — Submit</div><div class="step-title">Report a bad actor</div><div class="step-desc">Submit a report with a Discord username, user ID, violation type, and evidence.</div></div>
+      <div class="step-card"><div class="step-num">02 — Verify</div><div class="step-title">Staff review</div><div class="step-desc">Staff cross-reference logs and verify authenticity before issuing any flag.</div></div>
+      <div class="step-card"><div class="step-num">03 — Alert</div><div class="step-title">Network broadcast</div><div class="step-desc">Confirmed flags are pushed instantly to every server in the RedFlag network.</div></div>
     </div>
   </div>
-
   <div class="section">
     <div class="section-label">Recent confirmed flags</div>
-    <div id="recent-flags-list">
-      <div class="empty-state">Loading...</div>
-    </div>
+    <div id="recent-flags-list"><div class="empty-state">Loading...</div></div>
   </div>
 </div>
 
-<!-- ══ SUBMIT PAGE ══ -->
+<!-- ══ SUBMIT ══ -->
 <div id="page-submit" class="page">
-  <div class="form-page">
+  <!-- Login wall for unauthenticated users -->
+  <div id="submit-login-wall" class="login-wall" style="display:none">
+    <div class="login-icon">⚑</div>
+    <div class="login-title">Sign in to submit a report</div>
+    <div class="login-sub">You need to log in with Discord to submit a report. This helps us verify reporter identity and prevent abuse.</div>
+    <button class="btn-discord" onclick="loginWithDiscord()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.1.12 18.14.149 18.16a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+      Login with Discord
+    </button>
+  </div>
+  <!-- Actual form for logged-in users -->
+  <div id="submit-form-wrap" class="form-page" style="display:none">
     <div class="page-header">
       <h2 class="page-title">Submit a report</h2>
-      <p class="page-sub">All submissions are reviewed by our staff before a flag is issued. False reports may result in a ban.</p>
+      <p class="page-sub">All submissions are reviewed by staff before a flag is issued. False reports may result in a ban.</p>
     </div>
     <div class="form-grid">
-      <div class="form-group">
-        <label>Discord username</label>
-        <input id="f-username" type="text" placeholder="baduser#1234" />
-      </div>
-      <div class="form-group">
-        <label>Discord user ID</label>
-        <input id="f-userid" type="text" placeholder="123456789012345678" />
-      </div>
-      <div class="form-group full">
-        <label>Violation type</label>
+      <div class="form-group"><label>Discord username</label><input id="f-username" type="text" placeholder="baduser#1234" /></div>
+      <div class="form-group"><label>Discord user ID</label><input id="f-userid" type="text" placeholder="123456789012345678" /></div>
+      <div class="form-group full"><label>Violation type</label>
         <select id="f-type">
           <option value="">Select a category...</option>
           <option>Scamming / fraud</option>
@@ -666,97 +296,177 @@
           <option>Other</option>
         </select>
       </div>
-      <div class="form-group full">
-        <label>Evidence / description</label>
-        <textarea id="f-evidence" placeholder="Describe the incident in detail. Include links to screenshots, message logs, or any other relevant evidence..."></textarea>
-      </div>
-      <div class="form-group full">
-        <label>Your Discord username (reporter)</label>
-        <input id="f-reporter" type="text" placeholder="yourname#5678" />
-      </div>
+      <div class="form-group full"><label>Evidence / description</label><textarea id="f-evidence" placeholder="Describe the incident in detail. Include links to screenshots, message logs, or any other relevant evidence..."></textarea></div>
+      <div class="form-group full"><label>Submitting as</label><div class="reporter-prefill" id="reporter-prefill">—</div></div>
     </div>
-    <div class="form-actions">
-      <button class="btn btn-primary" onclick="submitReport()" id="submit-btn">Submit report</button>
-    </div>
+    <div class="form-actions"><button class="btn btn-primary" onclick="submitReport()" id="submit-btn">Submit report</button></div>
     <div class="error-msg" id="submit-error"></div>
-    <div class="success-banner" id="submit-success">
-      Report submitted successfully. Our staff will review it shortly.
-    </div>
+    <div class="success-banner" id="submit-success">Report submitted successfully. Our staff will review it shortly.</div>
   </div>
 </div>
 
-<!-- ══ DASHBOARD PAGE ══ -->
+<!-- ══ DASHBOARD ══ -->
 <div id="page-dashboard" class="page">
-  <div class="dashboard">
-    <div class="page-header">
-      <h2 class="page-title">Staff dashboard</h2>
-      <p class="page-sub">Review pending reports and manage confirmed flags.</p>
-    </div>
-
+  <!-- Login wall -->
+  <div id="dash-login-wall" class="login-wall" style="display:none">
+    <div class="login-icon">⚑</div>
+    <div class="login-title">Staff access only</div>
+    <div class="login-sub">Sign in with your Discord account. You must be a staff member in the RedFlag server to access this dashboard.</div>
+    <button class="btn-discord" onclick="loginWithDiscord()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.1.12 18.14.149 18.16a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+      Login with Discord
+    </button>
+  </div>
+  <!-- Access denied (logged in but not staff) -->
+  <div id="dash-denied" class="access-denied" style="display:none">
+    <div class="access-denied-title">Access denied</div>
+    <div class="access-denied-sub">You don't have the Staff role in the RedFlag server. If you believe this is a mistake, contact an admin.</div>
+  </div>
+  <!-- Actual dashboard -->
+  <div id="dash-content" class="dashboard" style="display:none">
+    <div class="page-header"><h2 class="page-title">Staff dashboard</h2><p class="page-sub">Review pending reports and manage confirmed flags.</p></div>
     <div class="dash-metrics">
-      <div class="dash-metric">
-        <div class="dash-metric-label">confirmed flags</div>
-        <div class="dash-metric-num red" id="d-confirmed">—</div>
-      </div>
-      <div class="dash-metric">
-        <div class="dash-metric-label">pending review</div>
-        <div class="dash-metric-num" id="d-pending">—</div>
-      </div>
-      <div class="dash-metric">
-        <div class="dash-metric-label">rejected</div>
-        <div class="dash-metric-num" id="d-rejected">—</div>
-      </div>
+      <div class="dash-metric"><div class="dash-metric-label">confirmed flags</div><div class="dash-metric-num red" id="d-confirmed">—</div></div>
+      <div class="dash-metric"><div class="dash-metric-label">pending review</div><div class="dash-metric-num" id="d-pending">—</div></div>
+      <div class="dash-metric"><div class="dash-metric-label">rejected</div><div class="dash-metric-num" id="d-rejected">—</div></div>
     </div>
-
     <div class="dash-section-label">Pending review</div>
     <div id="pending-list"><div class="empty-state">Loading...</div></div>
-
     <div style="height:32px"></div>
     <div class="dash-section-label">Confirmed flags</div>
-    <div class="search-row">
-      <input type="text" id="search-input" placeholder="Search by username or user ID..." oninput="renderConfirmed()" />
-    </div>
+    <div class="search-row"><input type="text" id="search-input" placeholder="Search by username or user ID..." oninput="renderConfirmed()" /></div>
     <div id="confirmed-list"><div class="empty-state">Loading...</div></div>
   </div>
 </div>
 
 <footer>
-  <span>RedFlag — an official service of Bot Express</span>
-  &nbsp;·&nbsp;
-  <a href="https://discord.gg/redflag">discord.gg/redflag</a>
-  &nbsp;·&nbsp;
-  <a href="https://botexpress.net">botexpress.net</a>
-  &nbsp;·&nbsp;
+  <span>RedFlag — an official service of Bot Express</span> &nbsp;·&nbsp;
+  <a href="https://discord.gg/redflag">discord.gg/redflag</a> &nbsp;·&nbsp;
+  <a href="https://botexpress.net">botexpress.net</a> &nbsp;·&nbsp;
   <span>© 2026 All Rights Reserved</span>
 </footer>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════
-//  CONFIGURATION — replace these two values
-// ══════════════════════════════════════════
-const SUPABASE_URL = 'https://aezfhdzccdmhdjebahkx.supabase.co';
+// ══════════════════════════════════════════════════════
+//  CONFIGURATION — fill these in
+// ══════════════════════════════════════════════════════
+const SUPABASE_URL     = 'https://aezfhdzccdmhdjebahkx.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlemZoZHpjY2RtaGRqZWJhaGt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMDA4NDIsImV4cCI6MjA5MDU3Njg0Mn0.-5ffmUAHtd0lWinIjqK3gFkwEi0fZSMgIuZSo3Ctud8';
-// ══════════════════════════════════════════
+
+const DISCORD_CLIENT_ID = '1470543071107088415';
+const DISCORD_GUILD_ID  = '1457923352374022317';
+const DISCORD_STAFF_ROLE = '1471001750969258114';
+
+// Set this to your deployed site URL (no trailing slash)
+// For local testing use: 'http://localhost:5500'
+const SITE_URL = window.location.origin;
+const REDIRECT_URI = encodeURIComponent(SITE_URL + '/callback.html');
+// ══════════════════════════════════════════════════════
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let allReports = [];
+let currentUser = null; // { id, username, avatar, isStaff }
 
-// ── NAVIGATION ──────────────────────────────
+// ── AUTH ──────────────────────────────────────────────
+function loginWithDiscord() {
+  const state = crypto.randomUUID();
+  sessionStorage.setItem('oauth_state', state);
+  const scope = encodeURIComponent('identify guilds.members.read');
+  const url = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=token&scope=${scope}&state=${state}`;
+  window.location.href = url;
+}
+
+function loadSession() {
+  const raw = sessionStorage.getItem('rf_user');
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
+function saveSession(user) {
+  sessionStorage.setItem('rf_user', JSON.stringify(user));
+}
+
+function logout() {
+  sessionStorage.removeItem('rf_user');
+  sessionStorage.removeItem('discord_token');
+  currentUser = null;
+  updateNavUser();
+  showPage('home');
+}
+
+function updateNavUser() {
+  const navUser = document.getElementById('nav-user');
+  const tabDash = document.getElementById('tab-dashboard');
+  const heroDash = document.getElementById('hero-dashboard-btn');
+  if (currentUser) {
+    navUser.style.display = 'flex';
+    document.getElementById('nav-avatar').src =
+      currentUser.avatar
+        ? `https://cdn.discordapp.com/avatars/${currentUser.id}/${currentUser.avatar}.png?size=64`
+        : `https://cdn.discordapp.com/embed/avatars/0.png`;
+    document.getElementById('nav-username').textContent = currentUser.username;
+    if (currentUser.isStaff) {
+      tabDash.classList.remove('hidden');
+      if (heroDash) heroDash.style.display = 'inline-flex';
+    }
+    // Pre-fill reporter field
+    const rp = document.getElementById('reporter-prefill');
+    if (rp) rp.textContent = currentUser.username;
+  } else {
+    navUser.style.display = 'none';
+    tabDash.classList.add('hidden');
+    if (heroDash) heroDash.style.display = 'none';
+  }
+}
+
+// ── NAVIGATION ────────────────────────────────────────
 function showPage(p) {
   document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
   document.getElementById('page-' + p).classList.add('active');
   const map = { home: 0, submit: 1, dashboard: 2 };
-  document.querySelectorAll('.nav-tab')[map[p]].classList.add('active');
-  if (p === 'dashboard') loadReports();
+  document.querySelectorAll('.nav-tab')[map[p]]?.classList.add('active');
+
+  if (p === 'submit') renderSubmitPage();
+  if (p === 'dashboard') renderDashboardPage();
   if (p === 'home') loadHome();
 }
 
-// ── TOAST ────────────────────────────────────
+function renderSubmitPage() {
+  const wall = document.getElementById('submit-login-wall');
+  const form = document.getElementById('submit-form-wrap');
+  if (currentUser) {
+    wall.style.display = 'none';
+    form.style.display = 'block';
+  } else {
+    wall.style.display = 'flex';
+    form.style.display = 'none';
+  }
+}
+
+function renderDashboardPage() {
+  const wall    = document.getElementById('dash-login-wall');
+  const denied  = document.getElementById('dash-denied');
+  const content = document.getElementById('dash-content');
+  wall.style.display = 'none';
+  denied.style.display = 'none';
+  content.style.display = 'none';
+
+  if (!currentUser) {
+    wall.style.display = 'flex';
+  } else if (!currentUser.isStaff) {
+    denied.style.display = 'flex';
+  } else {
+    content.style.display = 'block';
+    loadReports();
+  }
+}
+
+// ── TOAST ─────────────────────────────────────────────
 function showToast(msg, type = '') {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -765,85 +475,51 @@ function showToast(msg, type = '') {
   t._timer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// ── INITIALS ─────────────────────────────────
-function initials(name) {
-  return (name || '??').slice(0, 2).toUpperCase();
-}
-
-// ── FORMAT DATE ──────────────────────────────
+// ── HELPERS ───────────────────────────────────────────
+function initials(name) { return (name || '??').slice(0, 2).toUpperCase(); }
 function fmtDate(iso) {
   if (!iso) return '';
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-// ── LOAD HOME ────────────────────────────────
+// ── HOME ──────────────────────────────────────────────
 async function loadHome() {
-  const { data, error } = await db
-    .from('reports')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    document.getElementById('recent-flags-list').innerHTML =
-      '<div class="empty-state">Could not load flags. Check your Supabase configuration.</div>';
-    console.error(error);
-    return;
-  }
-
+  const { data, error } = await db.from('reports').select('*').order('created_at', { ascending: false });
+  if (error) { console.error(error); return; }
   allReports = data || [];
   updateStats();
-
   const confirmed = allReports.filter(r => r.status === 'confirmed').slice(0, 5);
   const el = document.getElementById('recent-flags-list');
-
-  if (!confirmed.length) {
-    el.innerHTML = '<div class="empty-state">No confirmed flags yet.</div>';
-    return;
-  }
-
+  if (!confirmed.length) { el.innerHTML = '<div class="empty-state">No confirmed flags yet.</div>'; return; }
   el.innerHTML = confirmed.map(r => `
     <div class="flag-row">
       <div class="flag-avatar">${initials(r.username)}</div>
-      <div>
-        <div class="flag-name">${esc(r.username)}</div>
-        <div class="flag-id">${esc(r.userid)}</div>
-      </div>
+      <div><div class="flag-name">${esc(r.username)}</div><div class="flag-id">${esc(r.userid)}</div></div>
       <span class="flag-date">${fmtDate(r.created_at)}</span>
       <span class="flag-type">${esc(r.type)}</span>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-// ── UPDATE STATS ─────────────────────────────
 function updateStats() {
   const confirmed = allReports.filter(r => r.status === 'confirmed').length;
-  const pending = allReports.filter(r => r.status === 'pending').length;
-  const rejected = allReports.filter(r => r.status === 'rejected').length;
-
+  const pending   = allReports.filter(r => r.status === 'pending').length;
+  const rejected  = allReports.filter(r => r.status === 'rejected').length;
   document.getElementById('stat-confirmed').textContent = confirmed;
-  document.getElementById('stat-pending').textContent = pending;
-  document.getElementById('d-confirmed').textContent = confirmed;
-  document.getElementById('d-pending').textContent = pending;
-  document.getElementById('d-rejected').textContent = rejected;
-
+  document.getElementById('stat-pending').textContent   = pending;
+  document.getElementById('d-confirmed').textContent    = confirmed;
+  document.getElementById('d-pending').textContent      = pending;
+  document.getElementById('d-rejected').textContent     = rejected;
   const badge = document.getElementById('pending-badge');
   badge.textContent = pending > 0 ? pending : '';
 }
 
-// ── LOAD DASHBOARD ───────────────────────────
+// ── DASHBOARD ─────────────────────────────────────────
 async function loadReports() {
-  const { data, error } = await db
-    .from('reports')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    document.getElementById('pending-list').innerHTML =
-      '<div class="empty-state">Could not load reports. Check your Supabase configuration.</div>';
-    console.error(error);
-    return;
-  }
-
+  const { data, error } = await db.from('reports').select('*').order('created_at', { ascending: false });
+  if (error) { console.error(error); return; }
   allReports = data || [];
   updateStats();
   renderPending();
@@ -853,147 +529,87 @@ async function loadReports() {
 function renderPending() {
   const pending = allReports.filter(r => r.status === 'pending');
   const el = document.getElementById('pending-list');
-  if (!pending.length) {
-    el.innerHTML = '<div class="empty-state">No pending reports. You\'re all caught up.</div>';
-    return;
-  }
+  if (!pending.length) { el.innerHTML = '<div class="empty-state">No pending reports. You\'re all caught up.</div>'; return; }
   el.innerHTML = pending.map(r => `
     <div class="report-card" id="card-${r.id}">
       <div class="report-card-top">
         <div class="flag-avatar">${initials(r.username)}</div>
         <div class="report-info">
-          <div class="report-name">
-            ${esc(r.username)}
-            <span class="report-uid">${esc(r.userid)}</span>
-            <span class="badge badge-pending">pending</span>
-          </div>
-          <div class="report-meta">
-            Submitted ${fmtDate(r.created_at)} by ${esc(r.reporter)} &nbsp;·&nbsp; ${esc(r.type)}
-          </div>
+          <div class="report-name">${esc(r.username)} <span class="report-uid">${esc(r.userid)}</span> <span class="badge badge-pending">pending</span></div>
+          <div class="report-meta">Submitted ${fmtDate(r.created_at)} by ${esc(r.reporter)} &nbsp;·&nbsp; ${esc(r.type)}</div>
           <div class="report-evidence">${esc(r.evidence)}</div>
           <div class="report-actions">
-            <button class="btn-sm btn-approve" onclick="decide('${r.id}', 'confirmed')">Approve &amp; flag</button>
-            <button class="btn-sm btn-reject" onclick="decide('${r.id}', 'rejected')">Reject</button>
+            <button class="btn-sm btn-approve" onclick="decide('${r.id}','confirmed')">Approve &amp; flag</button>
+            <button class="btn-sm btn-reject" onclick="decide('${r.id}','rejected')">Reject</button>
           </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function renderConfirmed() {
-  const query = (document.getElementById('search-input').value || '').toLowerCase();
+  const query = (document.getElementById('search-input')?.value || '').toLowerCase();
   const confirmed = allReports.filter(r =>
     r.status === 'confirmed' &&
     (!query || r.username.toLowerCase().includes(query) || r.userid.includes(query))
   );
   const el = document.getElementById('confirmed-list');
-  if (!confirmed.length) {
-    el.innerHTML = '<div class="empty-state">No confirmed flags' + (query ? ' matching your search' : '') + '.</div>';
-    return;
-  }
+  if (!confirmed.length) { el.innerHTML = `<div class="empty-state">No confirmed flags${query ? ' matching your search' : ''}.</div>`; return; }
   el.innerHTML = confirmed.map(r => `
     <div class="report-card">
       <div class="report-card-top">
         <div class="flag-avatar" style="background:rgba(232,55,42,0.12);border-color:rgba(232,55,42,0.3);color:var(--red)">${initials(r.username)}</div>
         <div class="report-info">
-          <div class="report-name">
-            ${esc(r.username)}
-            <span class="report-uid">${esc(r.userid)}</span>
-            <span class="badge badge-confirmed">confirmed</span>
-          </div>
-          <div class="report-meta">
-            Flagged ${fmtDate(r.created_at)} &nbsp;·&nbsp; ${esc(r.type)}
-          </div>
+          <div class="report-name">${esc(r.username)} <span class="report-uid">${esc(r.userid)}</span> <span class="badge badge-confirmed">confirmed</span></div>
+          <div class="report-meta">Flagged ${fmtDate(r.created_at)} &nbsp;·&nbsp; ${esc(r.type)}</div>
           <div class="report-evidence">${esc(r.evidence)}</div>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-// ── APPROVE / REJECT ─────────────────────────
 async function decide(id, status) {
-  const { error } = await db
-    .from('reports')
-    .update({ status })
-    .eq('id', id);
-
-  if (error) {
-    showToast('Error updating report.', 'red-t');
-    console.error(error);
-    return;
-  }
-
+  const approver = currentUser?.username || 'staff';
+  const { error } = await db.from('reports').update({ status, approved_by: approver }).eq('id', id);
+  if (error) { showToast('Error updating report.', 'red-t'); return; }
   const idx = allReports.findIndex(r => r.id === id);
-  if (idx > -1) allReports[idx].status = status;
-  updateStats();
-  renderPending();
-  renderConfirmed();
-
-  if (status === 'confirmed') {
-    showToast('Flag confirmed — network alert sent.', 'green');
-  } else {
-    showToast('Report rejected.', '');
-  }
+  if (idx > -1) { allReports[idx].status = status; allReports[idx].approved_by = approver; }
+  updateStats(); renderPending(); renderConfirmed();
+  showToast(status === 'confirmed' ? 'Flag confirmed — network alert sent.' : 'Report rejected.', status === 'confirmed' ? 'green' : '');
 }
 
-// ── SUBMIT REPORT ────────────────────────────
+// ── SUBMIT ────────────────────────────────────────────
 async function submitReport() {
   const username = document.getElementById('f-username').value.trim();
   const userid   = document.getElementById('f-userid').value.trim();
   const type     = document.getElementById('f-type').value;
   const evidence = document.getElementById('f-evidence').value.trim();
-  const reporter = document.getElementById('f-reporter').value.trim();
+  const reporter = currentUser?.username || '';
   const errEl    = document.getElementById('submit-error');
   const successEl = document.getElementById('submit-success');
   const btn      = document.getElementById('submit-btn');
 
-  errEl.style.display = 'none';
-  successEl.style.display = 'none';
-
-  if (!username || !userid || !type || !evidence || !reporter) {
+  errEl.style.display = 'none'; successEl.style.display = 'none';
+  if (!username || !userid || !type || !evidence) {
     errEl.textContent = 'Please fill in all fields before submitting.';
-    errEl.style.display = 'block';
-    return;
+    errEl.style.display = 'block'; return;
   }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Submitting...';
-
-  const { error } = await db.from('reports').insert({
-    username, userid, type, evidence, reporter, status: 'pending'
-  });
-
-  btn.disabled = false;
-  btn.innerHTML = 'Submit report';
-
-  if (error) {
-    errEl.textContent = 'Submission failed: ' + error.message;
-    errEl.style.display = 'block';
-    console.error(error);
-    return;
-  }
-
-  ['f-username', 'f-userid', 'f-evidence', 'f-reporter'].forEach(id => {
-    document.getElementById(id).value = '';
-  });
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Submitting...';
+  const { error } = await db.from('reports').insert({ username, userid, type, evidence, reporter, status: 'pending' });
+  btn.disabled = false; btn.innerHTML = 'Submit report';
+  if (error) { errEl.textContent = 'Submission failed: ' + error.message; errEl.style.display = 'block'; return; }
+  ['f-username','f-userid','f-evidence'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-type').value = '';
   successEl.style.display = 'block';
   showToast('Report submitted — pending staff review.', 'green');
 }
 
-// ── ESCAPE HTML ──────────────────────────────
-function esc(str) {
-  return String(str || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-// ── INIT ─────────────────────────────────────
-loadHome();
+// ── INIT ──────────────────────────────────────────────
+(function init() {
+  currentUser = loadSession();
+  updateNavUser();
+  loadHome();
+})();
 </script>
 </body>
 </html>
