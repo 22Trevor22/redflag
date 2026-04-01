@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RedFlag — Authenticating...</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root { --red: #E8372A; --bg: #0A0A0A; --text: #F0EDE8; --muted: #6B6865; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; display: flex; align-items: center; justify-content: center; min-height: 100vh; flex-direction: column; gap: 16px; }
+  .logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .logo span { color: var(--red); }
+  .status { font-size: 12px; color: var(--muted); }
+  .error { font-size: 13px; color: var(--red); text-align: center; max-width: 340px; line-height: 1.6; }
+  .spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--red); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="logo"><span>Red</span>Flag</div>
+<div class="spinner" id="spinner"></div>
+<div class="status" id="status">Authenticating with Discord...</div>
+<div class="error" id="error" style="display:none"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  CONFIGURATION — must match index.html
+// ══════════════════════════════════════════════════════
+const DISCORD_GUILD_ID   = '1457923352374022317';
+const DISCORD_STAFF_ROLE = '1471001750969258114';
+// ══════════════════════════════════════════════════════
+
+const statusEl = document.getElementById('status');
+const errorEl  = document.getElementById('error');
+const spinner  = document.getElementById('spinner');
+
+function fail(msg) {
+  spinner.style.display = 'none';
+  statusEl.style.display = 'none';
+  errorEl.textContent = msg;
+  errorEl.style.display = 'block';
+  setTimeout(() => { window.location.href = '/'; }, 4000);
+}
+
+async function handleCallback() {
+  // Discord uses fragment (#) for implicit flow tokens
+  const hash = window.location.hash.substring(1);
+  const params = new URLSearchParams(hash);
+
+  const accessToken = params.get('access_token');
+  const state       = params.get('state');
+  const storedState = sessionStorage.getItem('oauth_state');
+
+  if (!accessToken) {
+    fail('No access token received from Discord. Redirecting...');
+    return;
+  }
+  if (state !== storedState) {
+    fail('Invalid OAuth state. Possible CSRF attempt. Redirecting...');
+    return;
+  }
+  sessionStorage.removeItem('oauth_state');
+  sessionStorage.setItem('discord_token', accessToken);
+
+  // 1. Get user identity
+  statusEl.textContent = 'Fetching your Discord profile...';
+  let userRes;
+  try {
+    userRes = await fetch('https://discord.com/api/v10/users/@me', {
+      headers: { Authorization: 'Bearer ' + accessToken }
+    });
+  } catch {
+    fail('Could not reach Discord API. Check your connection.');
+    return;
+  }
+  if (!userRes.ok) { fail('Failed to fetch Discord profile. Redirecting...'); return; }
+  const user = await userRes.json();
+
+  // 2. Check guild membership + roles
+  statusEl.textContent = 'Checking server membership...';
+  let memberRes;
+  try {
+    memberRes = await fetch(`https://discord.com/api/v10/users/@me/guilds/${DISCORD_GUILD_ID}/member`, {
+      headers: { Authorization: 'Bearer ' + accessToken }
+    });
+  } catch {
+    fail('Could not verify server membership. Redirecting...');
+    return;
+  }
+
+  let isStaff = false;
+  if (memberRes.ok) {
+    const member = await memberRes.json();
+    isStaff = Array.isArray(member.roles) && member.roles.includes(DISCORD_STAFF_ROLE);
+  }
+  // If 404, user is not in the server — isStaff stays false, they can still submit reports
+
+  // 3. Save session
+  const sessionUser = {
+    id: user.id,
+    username: user.username + (user.discriminator && user.discriminator !== '0' ? '#' + user.discriminator : ''),
+    avatar: user.avatar,
+    isStaff
+  };
+  sessionStorage.setItem('rf_user', JSON.stringify(sessionUser));
+
+  statusEl.textContent = isStaff
+    ? 'Staff access confirmed. Redirecting...'
+    : 'Logged in. Redirecting...';
+
+  setTimeout(() => {
+    window.location.href = isStaff ? '/#dashboard' : '/';
+  }, 800);
+}
+
+handleCallback();
+</script>
+</body>
+</html>
